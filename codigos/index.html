@@ -53,18 +53,18 @@ case 'category':body=`<small>${s.segment}</small><h2>Selecciona una categoria</h
 case 'triple-warning':case 'mobile-warning':case 'services-warning':{
 let isTriple=s.page==='triple-warning',isMobile=s.page==='mobile-warning';
 let key=isTriple?'Triple':isMobile?'Mega Movil':'Servicios Adicionales';
-let msg=isTriple?'Para contratar un paquete Triple, cambia el selector de PAQUETES DOBLE a PAQUETES TRIPLE en la Dimme.':isMobile?'Selecciona la pestaña MEGAMOVIL en la Dimme.':'Selecciona la pestaña SERVICIOS en la Dimme.';
+let msg=isTriple?'Para contratar un paquete Triple, cambia el selector PAQUETES DOBLE en la Dimme.':isMobile?'Selecciona la pestaña MEGAMOVIL en la Dimme.':'Selecciona la pestaña SERVICIOS en la Dimme.';
 body=`<h2>Antes de continuar</h2><div class="warn">${msg}</div><img src="${dimmeScreens[key]}" alt="Captura de la Dimme con la opcion correcta resaltada" style="display:block;width:100%;height:auto;border:1px solid #dbe3ee;border-radius:13px;margin:14px 0"><button class="primary" onclick="go('${isTriple?'zone':isMobile?'mobile-menu':'services'}')">Entendido, continuar →</button>`;break}
 case 'zone':body=`<h2>${s.segment} · ${s.kind}</h2>`+['Pueblos','Expansion'].map(z=>item(z,'',`choose('zone','${z}','${z==='Expansion'?'speed':t?'channels':'fixed-detail'}')`)).join('');break;
 case 'speed':body='<h2>Selecciona la velocidad</h2>'+[200,300,500,1000].map(n=>item(n+' Mbps','',`choose('speed',${n},'${t?'channels':'fixed-detail'}')`)).join('');break;
 case 'channels':body='<h2>Selecciona los canales</h2>'+[80,120].map(n=>item(n+' canales',n===80?'Conecta':'Basico Plus',`choose('channels',${n},'fixed-detail')`)).join('');break;
 case 'fixed-detail':{
-let n=(exp?(t?tri[s.speed]:dbl[s.speed]):t?500:350)+(t&&s.channels===120?80:0);
+let n=(exp?(t?tri[s.speed]:dbl[s.speed]):t?450:300)+(t&&s.channels===120?80:0);
 let nm=`Mega Fibra ${exp?s.speed:100}${biz()?' Negocio':''}${t?' '+(s.channels===80?'Conecta':'Basico Plus')+(exp?' + Apps':''):''}`;
-let later=exp?`Desde el mes 7: <strong>${money(n+(t?100:50))}/mes</strong>`:'Precio base sin plazo promocional.';
+let later=`Desde el mes 7: <strong>${money(n+(t?100:50))}/mes</strong> (tarifa permanente).`;
 if(biz())later+=`<div class="rule">Desde el mes 13: <strong>+$50/mes</strong> por Cloud para negocios.</div>`;
 let benefits=[`Internet de ${exp?s.speed:100} Mbps`,'Telefonia fija'];if(t){benefits.push(`Xview · ${s.channels} canales`,'Amazon Prime');if(exp)benefits.push('Netflix con anuncios')}if(exp&&s.speed===1000)benefits.push('Mega Navegacion Segura','Mega Control Parental');if(biz())benefits.push('Cloud para negocios');
-body=`<small>${s.segment} · ${s.kind} · ${s.zone}</small><h2>${nm}</h2>${price(n,exp?'Primeros 6 meses':'Precio base',later,true)}${code(codes[s.segment][s.kind][s.zone])}<div class="line"><strong>Anticipo</strong><strong>$200</strong></div><h3>Beneficios incluidos</h3><ul>${benefits.map(x=>`<li>${x}</li>`).join('')}</ul>${biz()?'<div class="info"><strong>Cloud para negocios</strong><p>Dominio web .com, cuentas de correo ilimitadas y facturacion electronica: 150 CFDI al mes.</p><small>Incluido los primeros 12 meses; desde el mes 13 +$50/mes.</small></div>':''}${footer()}`;break}
+body=`<small>${s.segment} · ${s.kind} · ${s.zone}</small><h2>${nm}</h2>${price(n,'Primeros 6 meses',later,true)}${code(codes[s.segment][s.kind][s.zone])}<div class="line"><strong>Anticipo</strong><strong>$200</strong></div><h3>Beneficios incluidos</h3><ul>${benefits.map(x=>`<li>${x}</li>`).join('')}</ul>${biz()?'<div class="info"><strong>Cloud para negocios</strong><p>Dominio web .com, cuentas de correo ilimitadas y facturacion electronica: 150 CFDI al mes.</p><small>Incluido los primeros 12 meses; desde el mes 13 +$50/mes.</small></div>':''}${footer()}`;break}
 case 'mobile-menu':body='<h2>Mega Movil</h2>'+['Individual','Familiar'].map(x=>item('Planes '+(x==='Individual'?'individuales':'familiares'),'',`choose('mobileType','${x}','mobile-list')`)).join('');break;
 case 'mobile-list':body=`<h2>Planes ${s.mobileType==='Individual'?'individuales':'familiares'}</h2>`+(s.mobileType==='Individual'?['Esencial','Conectado','Ilimitado'].map(x=>item(x,money(mobile[x].p)+'/mes',`choose('plan','${x}','mobile-detail')`)).join(''):[2,3,4].map(n=>item(n+' lineas',money((200+(n-1)*100)*.9)+'/mes',`choose('lines',${n},'mobile-detail')`)).join(''));break;
 case 'mobile-detail':{
