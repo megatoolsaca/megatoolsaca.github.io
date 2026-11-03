@@ -61,7 +61,7 @@ case 'channels':body='<h2>Selecciona los canales</h2>'+[80,120].map(n=>item(n+' 
 case 'fixed-detail':{
 let n=(exp?(t?tri[s.speed]:dbl[s.speed]):t?450:300)+(t&&s.channels===120?80:0);
 let nm=`Mega Fibra ${exp?s.speed:100}${biz()?' Negocio':''}${t?' '+(s.channels===80?'Conecta':'Basico Plus')+(exp?' + Apps':''):''}`;
-let later=`Desde el mes 7: <strong>${money(n+(t?100:50))}/mes</strong> (tarifa permanente).`;
+let later=`Desde el mes 7: <strong>${money(n+(exp&&t?100:50))}/mes</strong>${exp?" (tarifa permanente)":""}.`;
 if(biz())later+=`<div class="rule">Desde el mes 13: <strong>+$50/mes</strong> por Cloud para negocios.</div>`;
 let benefits=[`Internet de ${exp?s.speed:100} Mbps`,'Telefonia fija'];if(t){benefits.push(`Xview · ${s.channels} canales`,'Amazon Prime');if(exp)benefits.push('Netflix con anuncios')}if(exp&&s.speed===1000)benefits.push('Mega Navegacion Segura','Mega Control Parental');if(biz())benefits.push('Cloud para negocios');
 body=`<small>${s.segment} · ${s.kind} · ${s.zone}</small><h2>${nm}</h2>${price(n,'Primeros 6 meses',later,true)}${code(codes[s.segment][s.kind][s.zone])}<div class="line"><strong>Anticipo</strong><strong>$200</strong></div><h3>Beneficios incluidos</h3><ul>${benefits.map(x=>`<li>${x}</li>`).join('')}</ul>${biz()?'<div class="info"><strong>Cloud para negocios</strong><p>Dominio web .com, cuentas de correo ilimitadas y facturacion electronica: 150 CFDI al mes.</p><small>Incluido los primeros 12 meses; desde el mes 13 +$50/mes.</small></div>':''}${footer()}`;break}
