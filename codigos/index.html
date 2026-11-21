@@ -157,9 +157,36 @@ if(x.page==='fixed-detail'){
  else if(svc==='Netflix')lines.push(ad?'2 pantallas, Full HD, descargas en 2 dispositivos y anuncios.':std?'2 pantallas, Full HD, descargas en 2 dispositivos, sin anuncios.':'4 pantallas, 4K UHD HDR y descargas en 6 dispositivos.');
  else if(svc==='Disney+')lines.push(ad?'2 pantallas, Full HD, con anuncios y sin descargas.':std?'2 pantallas, Full HD, descargas y sin anuncios en películas y series.':'4 pantallas, 4K HDR, Dolby Atmos compatible, descargas y canales ESPN.');
 }
-return lines.join('\n');
+const decorated=lines.map((line,i)=>{
+ if(!line)return '';
+ if(i===0)return '✨ *'+line+'*';
+ if(/^Internet de/.test(line))return '🌐 '+line;
+ if(/^Telefonía fija/.test(line))return '☎️ '+line;
+ if(/^Xview\+/.test(line))return '📺 '+line;
+ if(/^(Amazon Prime|Netflix con anuncios)/.test(line))return '🎬 '+line;
+ if(/^(Mega Navegación|Mega Control|Cloud para negocios)/.test(line))return '✅ '+line;
+ if(/^(Mensualidad:|Meses 1 al 6:)/.test(line))return '💰 '+line;
+ if(/^(Desde el mes|Desde el mes 7:|Desde el mes 13:)/.test(line))return '📅 '+line;
+ if(/^Anticipo:/.test(line))return '💳 '+line;
+ if(/^(Con portabilidad:|Con número nuevo:|1 línea|[0-9]+ línea)/.test(line))return '📱 '+line;
+ if(/^(Redes sociales|Llamadas y SMS)/.test(line))return '💬 '+line;
+ if(/^(Descuento familiar|Incluye Netflix)/.test(line))return '🎁 '+line;
+ if(/^(8 canales|Acceso a la app|Cajita Xview)/.test(line))return '📺 '+line;
+ if(/^(Hasta 2 dispositivos|2 pantallas|4 pantallas|Contenido Full HD)/.test(line))return '🎥 '+line;
+ if(/^(Permanencia mínima|Promoción válida|No aplica|Sujeto a política)/.test(line))return 'ℹ️ '+line;
+ if(/^(Extensor|Deportes premium)/.test(line))return '✅ '+line;
+ return '✅ '+line;
+});
+return decorated.join('\n');
 }
-function copyCustomerInfo(){const t=customerCopyText();if(!t)return;navigator.clipboard?.writeText(t).then(()=>alert('Información para cliente copiada')).catch(()=>prompt('Copia la información para el cliente:',t))}
+function copyCustomerInfo(){
+ const t=customerCopyText();if(!t)return;
+ if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(t).catch(()=>copyCustomerFallback(t));}
+ else copyCustomerFallback(t);
+}
+function copyCustomerFallback(t){
+ const area=document.createElement('textarea');area.value=t;area.setAttribute('readonly','');area.style.position='fixed';area.style.opacity='0';document.body.appendChild(area);area.select();try{document.execCommand('copy')}catch(e){}area.remove();
+}
 
 function render(){
 $('nav').innerHTML=state.page==='segment'?'':`<button onclick="back()">← Atras</button><button onclick="home()">⌂ Inicio</button>`;
