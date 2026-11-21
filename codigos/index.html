@@ -149,7 +149,7 @@ if(x.page==='fixed-detail'){
  if(svc==='Netflix'&&ad)lines.push('Desde el mes 4: $139/mes.');
  if(svc==='Disney+'&&ad)lines.push('Desde el mes 4: $159/mes.');
  lines.push('Anticipo: '+fmt(hbo?amount:Math.min(amount,100))+'.');
- if(hbo&&std){lines.push('8 canales premium en TV.','Acceso a la app HBO Max sin anuncios.','Hasta 2 dispositivos simultáneos y 5 perfiles.','Contenido Full HD y hasta 30 descargas.','Permanencia mínima de 90 días.','Promoción válida una vez cada 365 días.','No aplica para clientes con HBO Max Básico.');}
+ if(hbo&&std){lines.push('8 canales premium en TV.','Acceso a la app HBO Max sin anuncios.','Hasta 2 dispositivos simultáneos y 5 perfiles.','Contenido Full HD y hasta 30 descargas.',);}
  else if(hbo)lines.push('2 pantallas, Full HD, con anuncios y sin descargas.');
  else if(svc==='Xview')lines.push('Cajita Xview adicional para clientes con paquete Triple.');
  else if(svc==='WiFi Ultra')lines.push('Extensor de cobertura WiFi en el domicilio.');
