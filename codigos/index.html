@@ -60,7 +60,7 @@ case 'speed':body='<h2>Selecciona la velocidad</h2>'+[200,300,500,1000].map(n=>i
 case 'channels':body='<h2>Selecciona los canales</h2>'+[80,120].map(n=>item(n+' canales',n===80?'Conecta':'Basico Plus',`choose('channels',${n},'fixed-detail')`)).join('');break;
 case 'fixed-detail':{
 let n=(exp?(t?tri[s.speed]:dbl[s.speed]):t?450:300)+(t&&s.channels===120?80:0);
-let nm=`Mega Fibra ${exp?s.speed:100}${biz()?' Negocio':''}${t?' '+(s.channels===80?'Conecta':'Basico Plus')+(exp?' + Apps':''):''}`;
+let nm=t?`Mega Fibra Apps Xview+ ${s.channels===80?'Conecta':'Basico Plus'} ${exp?s.speed:100}${biz()?' Negocio':''}`:`Mega Fibra ${exp?s.speed:100}${biz()?' Negocio':''}`;
 let later=`Desde el mes 7: <strong>${money(n+(exp&&t?100:50))}/mes</strong>${exp?" (tarifa permanente)":""}.`;
 if(biz())later+=`<div class="rule">Desde el mes 13: <strong>+$50/mes</strong> por Cloud para negocios.</div>`;
 let benefits=[`Internet de ${exp?s.speed:100} Mbps`,'Telefonia fija'];if(t){benefits.push(`Xview · ${s.channels} canales`,'Amazon Prime');if(exp)benefits.push('Netflix con anuncios')}if(exp&&s.speed===1000)benefits.push('Mega Navegacion Segura','Mega Control Parental');if(biz())benefits.push('Cloud para negocios');
