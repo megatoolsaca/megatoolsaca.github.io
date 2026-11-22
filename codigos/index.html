@@ -224,7 +224,8 @@ function trailLabel(page){
  switch(page){
  case 'category':return x.segment;
  case 'zone':return x.kind;
- case 'speed':case 'channels':return x.zone==='Expansion'?'Expansión':'Pueblos';
+ case 'speed':return x.zone==='Expansion'?'Expansión':'Pueblos';
+ case 'channels':return x.zone==='Expansion'?x.speed+' Mbps':'Pueblos';
  case 'fixed-detail':return x.kind==='Triple'?x.channels+' canales':(x.zone==='Expansion'?x.speed+' Mbps':'100 Mbps');
  case 'mobile-menu':return 'Mega Móvil';
  case 'mobile-list':return x.mobileType==='Familiar'?'Familiar':'Individual';
