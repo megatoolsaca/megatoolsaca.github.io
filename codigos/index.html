@@ -221,7 +221,7 @@ function copyCustomerFallback(t){
  const area=document.createElement('textarea');area.value=t;area.setAttribute('readonly','');area.style.position='fixed';area.style.opacity='0';document.body.appendChild(area);area.select();try{document.execCommand('copy')}catch(e){}area.remove();
 }
 
-const trailMenus=new Set(['category','zone','speed','channels','mobile-menu','mobile-list','services','service-plans','hbo-plans','hbo-customer']);
+const trailMenus=new Set(['category','zone','speed','channels','fixed-detail','mobile-menu','mobile-list','mobile-detail','services','service-plans','hbo-plans','hbo-customer','service-detail','stream-detail','pending']);
 function trailLabel(page){
  const x=state;
  switch(page){
@@ -234,24 +234,50 @@ function trailLabel(page){
  case 'mobile-list':return x.mobileType==='Familiar'?'Familiar':'Individual';
  case 'mobile-detail':return x.mobileType==='Familiar'?x.lines+' líneas':x.plan;
  case 'services':return 'Servicios adicionales';
- case 'service-plans':case 'hbo-plans':return 'Planes';
- case 'hbo-customer':return 'Tipo de cliente';
- case 'service-detail':return x.tier&&['Netflix','Disney+','HBO Max'].includes(x.service)?x.tier:x.service;
- case 'stream-detail':return 'Streaming+';
- case 'stream-warning':case 'xview-warning':case 'netflix-warning':return 'Antes de continuar';
- case 'pending':return 'Información pendiente';
+ case 'service-plans':case 'hbo-plans':return x.service;
+ case 'hbo-customer':return x.tier;
+ case 'service-detail':return ['Netflix','Disney+','HBO Max'].includes(x.service)?x.tier:x.service;
+ case 'stream-detail':return 'Paquete '+x.streamPack;
+ case 'pending':return x.service;
  default:return '';
  }
 }
+function trailTarget(page){
+ const x=state;
+ switch(page){
+ case 'category':return 'segment';
+ case 'zone':return 'category';
+ case 'speed':return 'zone';
+ case 'channels':return x.zone==='Expansion'?'speed':'zone';
+ case 'fixed-detail':return x.kind==='Triple'?'channels':(x.zone==='Expansion'?'speed':'zone');
+ case 'mobile-menu':return 'category';
+ case 'mobile-list':return 'mobile-menu';
+ case 'mobile-detail':return 'mobile-list';
+ case 'services':return 'category';
+ case 'service-plans':case 'hbo-plans':return 'services';
+ case 'hbo-customer':return 'hbo-plans';
+ case 'service-detail':return ['Netflix','Disney+'].includes(x.service)?'service-plans':x.service==='HBO Max'?(x.tier==='Estandar'?'hbo-plans':'hbo-customer'):'services';
+ case 'stream-detail':return 'stream-warning';
+ case 'pending':return 'services';
+ default:return null;
+ }
+}
 function renderTrail(){
- let pages=[...state.history,state.page];
- let nodes=pages.map((page,index)=>({page,index,label:trailLabel(page)})).filter(n=>n.page!=='segment'&&n.label&&(trailMenus.has(n.page)||n.index===pages.length-1));
- nodes=nodes.filter((node,i)=>i===0||node.label!==nodes[i-1].label);
+ const pages=[...state.history,state.page];
+ const nodes=[];
+ pages.forEach(page=>{
+  if(!trailMenus.has(page))return;
+  const label=trailLabel(page),target=trailTarget(page);
+  const index=pages.lastIndexOf(target);
+  if(!label||index<0)return;
+  if(nodes.length&&nodes[nodes.length-1].label===label)return;
+  nodes.push({label,index});
+ });
  if(!nodes.length)return '';
- return '<div class="nav-trail" aria-label="Ruta de navegación">'+nodes.map((n,i)=>{
- const current=n.index===pages.length-1;
- return (i?'<span class="trail-arrow" aria-hidden="true">›</span>':'')+(current?'<span class="trail-current" aria-current="page">'+n.label+'</span>':'<button type="button" onclick="jumpTrail('+n.index+')">'+n.label+'</button>');
- }).join('')+'</div>';
+ return '<div class="nav-trail" aria-label="Ruta de navegación">'+nodes.map((n,i)=>
+ (i?'<span class="trail-arrow" aria-hidden="true">›</span>':'')+
+ '<button type="button" onclick="jumpTrail('+n.index+')" aria-label="Cambiar '+n.label+'">'+n.label+'</button>'
+ ).join('')+'</div>';
 }
 function jumpTrail(index){
  if(index<0||index>=state.history.length)return;
@@ -259,6 +285,7 @@ function jumpTrail(index){
  state.history=state.history.slice(0,index);
  render();
 }
+
 function render(){
  document.querySelector('.app-updated').hidden=state.page!=='segment';
  document.getElementById('home-ads').hidden=state.page!=='segment';
