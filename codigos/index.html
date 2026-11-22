@@ -101,6 +101,13 @@ header:has(.nav:empty) .brand .brand-tools{font-size:29px}
 #content > img.service-logo{display:block;margin:16px 0 18px;object-fit:contain;object-position:left center;max-width:100%;}
 
 /* Reportes de errores: acceso discreto y formulario accesible */
+
+/* Ruta de navegación contextual */
+.nav-trail{display:flex;align-items:center;flex-wrap:wrap;gap:5px 4px;margin:7px 0 13px;font-size:12px;line-height:1.6}
+.nav-trail button{font:inherit;font-weight:600;color:#2875b6;background:#eef5fc;border:0;border-radius:7px;padding:4px 7px;cursor:pointer;max-width:100%;overflow-wrap:anywhere}
+.nav-trail button:focus-visible{outline:2px solid #2875b6;outline-offset:2px}
+.nav-trail .trail-arrow{color:#8ca5bb;font-size:13px}
+.nav-trail .trail-current{font-weight:700;color:#28445d;padding:4px 3px;overflow-wrap:anywhere}
 .report-entry{display:flex;align-items:center;justify-content:center;gap:7px;width:max-content;max-width:100%;margin:12px auto 8px;padding:7px 11px;border:0;border-radius:10px;background:#eaf3fc;color:#276b9f;font-size:12px;font-weight:650;line-height:1.35;text-decoration:none;box-shadow:none}.report-entry svg{width:15px;height:15px;flex:none;stroke:#4685bd;stroke-width:2;fill:none;stroke-linecap:round;stroke-linejoin:round}.report-entry:hover{background:#dcecfb}.report-entry:focus-visible{outline:2px solid #2878d9;outline-offset:2px}
 .report-entry[hidden]{display:none}
 .report-dialog{border:0;border-radius:18px;width:min(92vw,450px);max-height:88dvh;padding:22px;box-shadow:0 18px 65px #12243c55;color:#17233a}
@@ -211,10 +218,44 @@ function copyCustomerFallback(t){
  const area=document.createElement('textarea');area.value=t;area.setAttribute('readonly','');area.style.position='fixed';area.style.opacity='0';document.body.appendChild(area);area.select();try{document.execCommand('copy')}catch(e){}area.remove();
 }
 
+const trailMenus=new Set(['category','zone','speed','channels','mobile-menu','mobile-list','services','service-plans','hbo-plans','hbo-customer']);
+function trailLabel(page){
+ const x=state;
+ switch(page){
+ case 'category':return x.segment;
+ case 'zone':return x.kind;
+ case 'speed':case 'channels':return x.zone==='Expansion'?'Expansión':'Pueblos';
+ case 'fixed-detail':return x.kind==='Triple'?x.channels+' canales':(x.zone==='Expansion'?x.speed+' Mbps':'100 Mbps');
+ case 'mobile-menu':return 'Mega Móvil';
+ case 'mobile-list':return x.mobileType==='Familiar'?'Familiar':'Individual';
+ case 'mobile-detail':return x.mobileType==='Familiar'?x.lines+' líneas':x.plan;
+ case 'services':return 'Servicios adicionales';
+ case 'service-plans':case 'hbo-plans':case 'hbo-customer':case 'service-detail':case 'stream-detail':case 'stream-warning':case 'xview-warning':case 'netflix-warning':return x.service;
+ case 'pending':return 'Información pendiente';
+ default:return '';
+ }
+}
+function renderTrail(){
+ let pages=[...state.history,state.page];
+ let nodes=pages.map((page,index)=>({page,index,label:trailLabel(page)})).filter(n=>n.page!=='segment'&&n.label&&(trailMenus.has(n.page)||n.index===pages.length-1));
+ if(!nodes.length)return '';
+ return '<div class="nav-trail" aria-label="Ruta de navegación">'+nodes.map((n,i)=>{
+ const current=n.index===pages.length-1;
+ return (i?'<span class="trail-arrow" aria-hidden="true">›</span>':'')+(current?'<span class="trail-current" aria-current="page">'+n.label+'</span>':'<button type="button" onclick="jumpTrail('+n.index+')">'+n.label+'</button>');
+ }).join('')+'</div>';
+}
+function jumpTrail(index){
+ if(index<0||index>=state.history.length)return;
+ state.page=state.history[index];
+ state.history=state.history.slice(0,index);
+ render();
+}
 function render(){
  document.querySelector('.app-updated').hidden=state.page!=='segment';
  document.getElementById('home-ads').hidden=state.page!=='segment';
 $('nav').innerHTML=state.page==='segment'?'':`<button onclick="back()">← Atras</button><button onclick="home()">⌂ Inicio</button>`;
+document.querySelector('.nav-trail')?.remove();
+$('nav').insertAdjacentHTML('afterend',renderTrail());
 let s=state,body='',t=s.kind==='Triple',exp=s.zone==='Expansion';
 switch(s.page){
 case 'segment':body='<h2>Tipo de cliente</h2>'+['Residencial','Negocio'].map(x=>item(x,'',`choose('segment','${x}','category')`)).join('');break;
