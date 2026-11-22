@@ -141,7 +141,7 @@ if(x.page==='fixed-detail'){
  else {const p=mobile[x.plan];lines.push('Con portabilidad: '+p.port+(x.plan==='Esencial'?' durante 12 meses; desde el mes 13: 6 GB':x.plan==='Conectado'?' durante 12 meses; desde el mes 13: 30 GB':'')+'.','Con número nuevo: '+p.fresh+'.','Redes sociales incluidas: '+p.social+'.');if(x.plan==='Ilimitado')lines.push('Sujeto a política de uso justo.')}
  lines.push('Llamadas y SMS ilimitados.','Anticipo: '+fmt(fam?50+x.lines*50:mobile[x.plan].a)+'.');
 }else if(x.page==='stream-detail'){
- lines.push('STREAMING+','Mensualidad: $299.','Incluye Netflix, HBO Max, Disney+ y Prime Video en sus versiones básicas.','Anticipo: $100.');
+ lines.push('STREAMING+','Mensualidad: $299.','Incluye Netflix, HBO Max, Disney+ y Prime Video en sus versiones básicas.','Anticipo: $299.');
 }else if(x.page==='service-detail'){
  const svc=x.service,ad=x.tier==='Con anuncios',hbo=svc==='HBO Max',std=x.tier==='Estandar',promo=hbo&&!std&&x.customer==='Actual';
  const amount=svc==='WiFi Ultra'||svc==='Xview'?50:svc==='FOX+'?199:svc==='Netflix'?(ad?100:std?250:339):svc==='Disney+'?(ad?80:std?259:339):std?120:promo?80:149;
@@ -151,7 +151,7 @@ if(x.page==='fixed-detail'){
  if(hbo&&std)lines.push('Desde el mes 13: $239/mes.');
  if(svc==='Netflix'&&ad)lines.push('Desde el mes 4: $139/mes.');
  if(svc==='Disney+'&&ad)lines.push('Desde el mes 4: $159/mes.');
- lines.push('Anticipo: '+fmt(hbo?amount:Math.min(amount,100))+'.');
+ lines.push('Anticipo: '+fmt(amount)+'.');
  if(hbo&&std){lines.push('8 canales premium en TV.','Acceso a la app HBO Max sin anuncios.','Hasta 2 dispositivos simultáneos y 5 perfiles.','Contenido Full HD y hasta 30 descargas.',);}
  else if(hbo)lines.push('2 pantallas, Full HD, con anuncios y sin descargas.');
  else if(svc==='Xview')lines.push('Cajita Xview adicional para clientes con paquete Triple.');
@@ -229,13 +229,13 @@ case 'hbo-customer':body='<h2>HBO Max Basico con anuncios</h2><p>¿El cliente es
 case 'stream-warning':body='<h2>Antes de continuar</h2><div class="warn">Verifica que paquete tiene contratado el cliente actualmente: <strong>Doble o Triple</strong>.<p>Esta informacion es necesaria para seleccionar el nombre correcto del servicio en <strong>la Dimme</strong> y aplicar el codigo de promocion correspondiente.</p></div><h3>¿Que paquete tiene el cliente?</h3>'+['Doble','Triple'].map(x=>item('Paquete '+x,'',`choose('streamPack','${x}','stream-detail')`)).join('');break;
 case 'stream-detail':{
 let nm=`Streaming Plus ${s.streamPack==='Doble'?'Dobles':'Triples'} ${biz()?'Empres.':'Resid.'}(streaming+)`,c=s.streamPack==='Doble'?'5503':'5502';
-body=`<small>${s.segment} · Paquete ${s.streamPack}</small><h2>STREAMING+</h2><img class="service-logo stream-full" src="${logos.stream}"><p><small>Nombre exacto en la DIMME</small><br><strong>${nm}</strong></p>${price(299,'Mensualidad regular','Sin aumento promocional programado.')}${code(c)}<div class="package-advance"><strong>Anticipo</strong><strong>$100</strong></div><h3>Incluye cuatro plataformas en sus versiones basicas</h3><ul><li>Netflix</li><li>HBO Max</li><li>Disney+</li><li>Prime Video</li></ul>${footer()}`;break}
+body=`<small>${s.segment} · Paquete ${s.streamPack}</small><h2>STREAMING+</h2><img class="service-logo stream-full" src="${logos.stream}"><p><small>Nombre exacto en la DIMME</small><br><strong>${nm}</strong></p>${price(299,'Mensualidad regular','Sin aumento promocional programado.')}${code(c)}<div class="package-advance"><strong>Anticipo</strong><strong>$299</strong></div><h3>Incluye cuatro plataformas en sus versiones basicas</h3><ul><li>Netflix</li><li>HBO Max</li><li>Disney+</li><li>Prime Video</li></ul>${footer()}`;break}
 case 'service-detail':{
 let svc=s.service,ad=s.tier==='Con anuncios',hboPromo=svc==='HBO Max'&&s.tier==='Basico con anuncios'&&s.customer==='Actual';
 let nm=svc==='WiFi Ultra'?`WiFi Ultra ${s.segment}`:svc==='Xview'?'Adicional Xview Conecta':svc==='FOX+'?(biz()?'FOX Sport Premium Emp':'FOX+ Res'):svc==='Netflix'?(ad?(biz()?'Netflix anuncios BAO Negocio':'Netflix anuncios BAO Res'):s.tier==='Estandar'?(biz()?'Netflix Estandar Emp':'Netflix Estandar Res'):(biz()?'Netflix Premium Emp':'Netflix Premium Res')):svc==='Disney+'?(ad?(biz()?'Disney+ AnunciosPromo 3M Empres':'Disney+ AnunciosPromo 3M'):`DISNEY+ ${s.tier==='Estandar'?'ESTANDAR':'PREMIUM'}`):(biz()?'HBOMAX Emp':'HBOMAX Res');
 let n=svc==='WiFi Ultra'||svc==='Xview'?50:svc==='FOX+'?199:svc==='Netflix'?(ad?100:s.tier==='Estandar'?250:339):svc==='Disney+'?(ad?80:s.tier==='Estandar'?259:339):s.tier==='Estandar'?120:hboPromo?80:149;
 let c=svc==='WiFi Ultra'?'4905':svc==='Xview'?'4168':svc==='FOX+'?'4100':svc==='Netflix'?(ad?(biz()?'4922':'4919'):'3815'):svc==='Disney+'?(ad?'5592':s.tier==='Estandar'?'4566':'4572'):s.tier==='Estandar'?(biz()?'5724':'5723'):hboPromo?'5494':biz()?'3814':'3813';
-let advance=svc==='HBO Max'?n:Math.min(n,100);
+let advance=n;
 let extra=svc==='Netflix'&&ad?'Desde el mes 4: <strong>$139/mes</strong>':svc==='Disney+'&&ad?'Desde el mes 4: <strong>$159/mes</strong>':hboPromo?'Desde el mes 7: <strong>$149/mes</strong>':svc==='HBO Max'&&s.tier==='Estandar'?'Desde el mes 13: <strong>$239/mes</strong>':'Tarifa regular, sin aumento promocional programado.';
 let label=svc==='HBO Max'&&s.tier==='Estandar'?'Primeros 12 meses':hboPromo?'Primeros 6 meses':(svc==='Netflix'||svc==='Disney+')&&ad?'Primeros 3 meses':'Mensualidad';
 let benefit=svc==='WiFi Ultra'?'Extiende la cobertura WiFi dentro del domicilio, especialmente en casas grandes o zonas donde la señal del modem llega debil.':svc==='Xview'?'Cajita Xview adicional para clientes con paquete Triple.':svc==='FOX+'?'Canal premium de deportes con eventos en vivo. La disponibilidad depende de los derechos de transmision.':svc==='Netflix'?(ad?'2 pantallas, Full HD 1080p, descargas en 2 dispositivos, con anuncios.':s.tier==='Estandar'?'2 pantallas, Full HD 1080p, descargas en 2 dispositivos, sin anuncios.':'4 pantallas, 4K UHD HDR, audio espacial, descargas en 6 dispositivos.'):svc==='Disney+'?(ad?'2 pantallas, Full HD, con anuncios y sin descargas.':s.tier==='Estandar'?'2 pantallas, Full HD, descargas y sin anuncios en peliculas y series.':'4 pantallas, 4K HDR, Dolby Atmos compatible, descargas y canales ESPN.'):(s.tier==='Estandar'?'8 canales premium en TV; acceso a la app HBO Max sin anuncios; hasta 2 dispositivos simultaneos; hasta 5 perfiles; contenido Full HD y hasta 30 descargas.':'2 pantallas, Full HD, con anuncios y sin descargas.');
